@@ -32,9 +32,16 @@ function formartCurrencyBRL(value) {
 form.addEventListener('submit', (event) => { 
   event.preventDefault(); //Impede o envio do formulário
   
-    // ✅ Adicione validação
   if (!expense.value.trim() || !category.value || !amount.value) {
     alert("Por favor, preencha todos os campos!");
+    return;
+  }
+
+  // parse the numeric value (in cents) to check for zero or negative
+  const rawValue = amount.value.replace(/\D/g, '');
+  const numeric = parseInt(rawValue, 10) / 100;
+  if (isNaN(numeric) || numeric <= 0) {
+    alert("O valor da despesa precisa ser maior que zero!");
     return;
   }
 
@@ -133,12 +140,13 @@ try {
 
       value = parseFloat(value) 
 
-      if(isNaN(value) || value <= 0) {
-         console.error(`Valor inválido encontrado: ${itemAmount.textContent}`);
-        return;
+      if (isNaN(value) || value <= 0) {
+        // log and skip invalid amounts instead of aborting the entire loop
+        console.error(`Valor inválido encontrado: ${itemAmount.textContent}`);
+        continue;
       }
 
-      total += Number(value)
+      total += Number(value);
     }
     expensesTotal.textContent = `Total: ${formartCurrencyBRL(total)}`;
 
